@@ -1,0 +1,12 @@
+{
+  "url": "https://www.epicgames.com/store/en-US/",
+  "selectors":{
+    "signIn": "[data-component='SignIn']",
+    "loginWithEpic": "#login-with-epic",
+    "emailField": "#email",
+    "passwordField": "#password",
+    "loginButton": "#sign-in",
+    "securityCode": ".jss27 > input",
+    "securityContinue": "#continue"
+  }
+}

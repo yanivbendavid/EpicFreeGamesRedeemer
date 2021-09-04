@@ -1,0 +1,29 @@
+{
+  "name": "epicfreegamesredeemer",
+  "version": "1.0.0",
+  "description": "Epic Free Games Redeemer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanivbendavid/EpicFreeGamesRedeemer.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yanivbendavid/EpicFreeGamesRedeemer/issues"
+  },
+  "homepage": "https://github.com/yanivbendavid/EpicFreeGamesRedeemer#readme",
+  "dependencies": {
+    "puppeteer": "^10.2.0",
+    "totp-generator": "0.0.9"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-promise": "^5.1.0"
+  }
+}
