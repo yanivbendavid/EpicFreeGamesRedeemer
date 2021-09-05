@@ -1,42 +1,59 @@
-const {getBrowser, mfaCodeGenerator} = require('./utils');
-const constant = require('./constant.json');
+const { getBrowser, mfaCodeGenerator, logger } = require("./utils");
+const constant = require("./constant").redeemer;
 
-exports.redeem = async (email, password, totp=false) => {
-  /*
-  */
-
+/**
+ * The main component of EPIC free game redeemer.
+ * @summary This can be used externally but it's better to just launch it via the main entry point.
+ * @param {string} email: email of desired user
+ * @param {string} password: password of desired user
+ * @param {string} totp: optional MFA token
+ * @param {boolean} verbose: extra logs
+ */
+exports.redeem = async (
+  email,
+  password,
+  totp = false,
+  cookie = false,
+  verbose = false
+) => {
   const page = await getBrowser();
   await page.goto(constant.url);
-  console.log('waiting for Epic');
+
+  verbose && logger.log("Waiting for Epic");
   await page.waitForSelector(constant.selectors.signIn);
   await page.click(constant.selectors.signIn);
-  
+
+  verbose && logger.log("Going to login page");
   await page.waitForSelector(constant.selectors.loginWithEpic);
   await page.click(constant.selectors.loginWithEpic);
 
-  await page.waitForSelector(constant.selectors.loginButton)
-  await page.type(constant.selectors.emailField, email)
-  await page.type(constant.selectors.passwordField, password)
-  await page.click(constant.selectors.loginButton)
+  verbose && logger.log(`Trying to login to user: ${email}`);
+  await page.waitForSelector(constant.selectors.loginButton);
+  await page.type(constant.selectors.emailField, email);
+  await page.type(constant.selectors.passwordField, password);
+  await page.keyboard.press("Enter");
+  // await page.click(constant.selectors.loginButton);
 
-  if (page.url.includes('mfa')){
-    if (!totp){
-      return console.error('Please provide your TOTP token from EPIC.')
+  await page.waitForSelector(constant.selectors.loginErrorMessage);
+
+  logger.infoEmojis(await page.$eval(constant.selectors.loginErrorMessage));
+
+  if (page.url().includes("mfa")) {
+    //TODO: add a non MFA senario for URL checkup
+
+    // MFA
+    if (page.url().includes("mfa")) {
+      if (!totp) {
+        return logger.error("Please provide your TOTP token from EPIC.");
+      }
+      await page.waitForSelector(constant.selectors.securityCode);
+      await page.type(constant.selectors.securityCode, mfaCodeGenerator(totp));
+      await page.click();
     }
-    await page.waitForSelector(constant.selectors.securityCode)
-    await page.type(constant.selectors.securityCode, mfaCodeGenerator(totp)),
-    await page.click();
+    // ENDOF MFA
   }
-  
-  // User is already logged in
 
-  // TODO:
-  // - Add redeem game function for at least 1 game! (Via css selectors).
-  // - When 1 game is already redeemed, on second and on, open new tab and redeem the rest.
-  // - Add a checkout flow.
-  // - Separate login method to an external function.
-  // - Add external cookie support.
-  // - await Promise.all([tab1, tab2]).
+  // TODO: Finish this!
 
   return await page.close();
-}
+};
